@@ -181,6 +181,15 @@ test_l10n_cjk_uni(void)
     CHECK(skip_width("\xf3\xa0\x84\x80", 4, &c) == 2 && c == 4);	/* U+E0100 (A) */
     CHECK(skip_width("\xf3\xb0\x80\x80", 4, &c) == 2 && c == 4);	/* U+F0000 (A) */
     CHECK(skip_width("\xe3\x81", 2, &c) == 1 && c == 1);	/* truncated */
+
+    /* invalid UTF-8 is skipped one byte at a time */
+    CHECK(skip_width("\xa1", 1, &c) == 1 && c == 1);	/* stray trail byte */
+    CHECK(skip_width("\xc0\xaf", 2, &c) == 1 && c == 1);	/* overlong */
+    CHECK(skip_width("\xe0\x80\xaf", 3, &c) == 1 && c == 1);	/* overlong */
+    CHECK(skip_width("\xed\xa0\x80", 3, &c) == 1 && c == 1);	/* surrogate */
+    CHECK(skip_width("\xf4\x90\x80\x80", 4, &c) == 1 && c == 1);	/* > U+10FFFF */
+    CHECK(skip_width("\xf8\x88\x80\x80\x80", 5, &c) == 1 && c == 1);	/* 5 bytes */
+    CHECK(skip_width("\xe3\x41", 2, &c) == 1 && c == 1);	/* bad trail byte */
 }
 
 int
