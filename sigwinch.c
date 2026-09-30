@@ -23,6 +23,7 @@
 #if HAVE_SYS_IOCTL_H
 #  include <sys/ioctl.h>
 #endif
+#include <errno.h>
 
 static struct sigaction oact;
 static int master_fileno;
@@ -31,9 +32,11 @@ static void
 sigwinch(int unused)
 {
     struct winsize win;
+    int saved_errno = errno;
 
     ioctl(STDIN_FILENO,  TIOCGWINSZ, &win);
     ioctl(master_fileno, TIOCSWINSZ, &win);
+    errno = saved_errno;
 }
 
 int
