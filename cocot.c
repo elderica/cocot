@@ -14,6 +14,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <getopt.h>
 /* login_tty() */
 #if HAVE_UTMP_H
 #  include <utmp.h>
@@ -31,6 +32,12 @@
 #include "init.h"
 #include "loop.h"
 #include "suspend.h"
+
+static const struct option long_options[] = {
+    { "help",    no_argument, NULL, 'h' },
+    { "version", no_argument, NULL, 'v' },
+    { NULL, 0, NULL, 0 }
+};
 
 #if DEBUG
 #define DEBUG_LOG "debug.log"
@@ -72,7 +79,6 @@ usage(int argc, char *argv[])
 int
 main(int argc, char *argv[])
 {
-    int i;
     int c;
     char *logfn = NULL;
     char *logmd = "w";
@@ -90,13 +96,9 @@ main(int argc, char *argv[])
 
     if (argc == 1)
 	usage(argc, argv);
-    for (i = 1; i < argc && argv[i][0] == '-'; i++) {
-	if (strcmp(argv[i], "--help") == 0)
-	    argv[i] = "-h";
-	else if (strcmp(argv[i], "--version") == 0)
-	    argv[i] = "-v";
-    }
-    while ((c = getopt(argc, argv, "ao:t:p:inhv")) != -1) {
+    /* "+": stop at the first non-option so COMMAND's options are kept */
+    while ((c = getopt_long(argc, argv, "+ao:t:p:inhv",
+			    long_options, NULL)) != -1) {
 	switch (c) {
 	case 'a':
 	    logmd = "a";
