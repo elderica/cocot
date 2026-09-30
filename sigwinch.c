@@ -5,24 +5,12 @@
  * All rights reserved.
  */
 
-#if HAVE_CONFIG_H
-#  include <config.h>
-#endif
-#if HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
-#if HAVE_TERMIOS_H
-#  include <termios.h>
-#endif
-#if HAVE_SIGNAL_H
-#  include <signal.h>
-#endif
-#if HAVE_SYS_TYPES_H
-#  include <sys/types.h>
-#endif
-#if HAVE_SYS_IOCTL_H
-#  include <sys/ioctl.h>
-#endif
+#include <config.h>
+#include <unistd.h>
+#include <termios.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
 #include <errno.h>
 
 #include "sigwinch.h"

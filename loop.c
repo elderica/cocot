@@ -5,24 +5,12 @@
  * All rights reserved.
  */
 
-#if HAVE_CONFIG_H
-#  include <config.h>
-#endif
-#if HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
-#if HAVE_SYS_TYPES_H
-#  include <sys/types.h>
-#endif
-#if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-#endif
-#if HAVE_STRING_H
-#  include <string.h>
-#endif
-#if HAVE_SIGNAL_H
-#  include <signal.h>
-#endif
+#include <config.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/select.h>
+#include <string.h>
+#include <signal.h>
 #include <errno.h>
 
 #include "init.h"
@@ -30,10 +18,6 @@
 #include "sigwinch.h"
 #include "ccio.h"
 #include "suspend.h"
-
-#ifndef HAVE_MAX
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#endif
 
 void
 loop(int mfd, FILE *fp,
@@ -43,7 +27,7 @@ loop(int mfd, FILE *fp,
 {
     CCIO master, slave;
     fd_set fds;
-    int fdmax = max(STDIN_FILENO, mfd) + 1;
+    int fdmax = (mfd > STDIN_FILENO ? mfd : STDIN_FILENO) + 1;
     if (ccio_init(&master, proc_input_code, term_input_code, 0) == CCIO_ERROR ||
 	ccio_init(&slave, term_output_code, proc_output_code, dec_jis) == CCIO_ERROR)
 	fatal("%s: TERM_CODE(%s,%s) and/or PROC_CODE(%s,%s) is invalid.",

@@ -8,9 +8,7 @@
 #ifndef L10N_JA_H
 #define L10N_JA_H
 
-#if HAVE_SYS_TYPES_H
-#  include <sys/types.h>
-#endif
+#include <sys/types.h>
 
 void *
 l10n_ja_open(int dec_jis);

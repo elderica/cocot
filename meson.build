@@ -7,12 +7,8 @@ project('cocot', 'c',
 cc = meson.get_compiler('c')
 cdata = configuration_data()
 
-cdata.set_quoted('PACKAGE', meson.project_name())
 cdata.set_quoted('PACKAGE_NAME', meson.project_name())
-cdata.set_quoted('PACKAGE_TARNAME', meson.project_name())
 cdata.set_quoted('PACKAGE_VERSION', meson.project_version())
-cdata.set_quoted('PACKAGE_STRING', '@0@ @1@'.format(meson.project_name(), meson.project_version()))
-cdata.set_quoted('VERSION', meson.project_version())
 
 # Enable platform extensions (like AC_USE_SYSTEM_EXTENSIONS)
 foreach m : ['_GNU_SOURCE', '_DARWIN_C_SOURCE', '_NETBSD_SOURCE',
@@ -25,40 +21,39 @@ cdata.set_quoted('DEFAULT_PROC_CODE', get_option('default_proc_code'))
 
 deps = []
 
-# iconv (libc built-in or libiconv)
-iconv_dep = dependency('iconv')
-deps += iconv_dep
-if not cc.has_header('iconv.h', dependencies : iconv_dep)
-  error('iconv.h is not available')
-endif
-cdata.set('HAVE_ICONV_H', 1)
+# iconv (in libc or libiconv)
+deps += dependency('iconv')
 
-# openpty() from libutil, or fall back to /dev/ptmx
+# openpty() and login_tty() are in libc or libutil depending on the platform
 util_dep = cc.find_library('util', required : false)
-if util_dep.found() and cc.has_function('openpty', dependencies : util_dep)
-  cdata.set('HAVE_LIBUTIL', 1)
+use_util = false
+foreach f : ['openpty', 'login_tty']
+  if cc.has_function(f)
+    cdata.set('HAVE_' + f.to_upper(), 1)
+  elif util_dep.found() and cc.has_function(f, dependencies : util_dep)
+    cdata.set('HAVE_' + f.to_upper(), 1)
+    use_util = true
+  endif
+endforeach
+if use_util
   deps += util_dep
-elif import('fs').exists('/dev/ptmx') and cc.has_header('stropts.h')
-  cdata.set('HAVE_STROPTS_H', 1)
 endif
 
-foreach h : ['stdlib.h', 'string.h', 'sys/ioctl.h', 'sys/time.h', 'sys/types.h',
-             'sys/wait.h', 'termios.h', 'unistd.h', 'utmp.h',
-             'libutil.h', 'util.h', 'pty.h', 'signal.h']
+# Headers declaring openpty()/login_tty() vary between platforms
+foreach h : ['utmp.h', 'libutil.h', 'util.h', 'pty.h']
   if cc.has_header(h)
     cdata.set('HAVE_' + h.underscorify().to_upper(), 1)
   endif
 endforeach
 
-foreach f : ['memcpy', 'memmove', 'memset', 'select', 'strerror',
-             'max', 'cfmakeraw', 'login_tty']
-  if cc.has_function(f, dependencies : deps)
-    cdata.set('HAVE_' + f.to_upper(), 1)
-  endif
-endforeach
+# STREAMS modules must be pushed on the slave pty (e.g. Solaris)
+if not cdata.has('HAVE_OPENPTY') and cc.has_header('stropts.h')
+  cdata.set('HAVE_STROPTS_H', 1)
+endif
 
-# Assume a GNU-compatible malloc (malloc(0) returns a valid pointer)
-cdata.set('HAVE_MALLOC', 1)
+if cc.has_function('cfmakeraw', prefix : '#include <termios.h>')
+  cdata.set('HAVE_CFMAKERAW', 1)
+endif
 
 configure_file(output : 'config.h', configuration : cdata)
 
@@ -67,8 +62,6 @@ conv_lib = static_library('cocotconv',
   'l10n_cjk_uni.c',
   'l10n_cjk_uni_table.c',
   'l10n_ja.c',
-  'malloc.c',
-  c_args : ['-DHAVE_CONFIG_H'],
   dependencies : deps)
 
 executable('cocot',
@@ -77,7 +70,6 @@ executable('cocot',
   'loop.c',
   'sigwinch.c',
   'suspend.c',
-  c_args : ['-DHAVE_CONFIG_H'],
   link_with : conv_lib,
   dependencies : deps,
   install : true)

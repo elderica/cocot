@@ -5,15 +5,9 @@
  * All rights reserved.
  */
 
-#if HAVE_CONFIG_H
-#  include <config.h>
-#endif
-#if HAVE_SYS_TYPES_H
-#  include <sys/types.h>
-#endif
-#if HAVE_ICONV_H
-#  include <iconv.h>
-#endif
+#include <config.h>
+#include <sys/types.h>
+#include <iconv.h>
 #include <errno.h>
 #include "l10n_cjk_uni.h"
 #include "l10n_cjk_uni_table.h"

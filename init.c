@@ -5,33 +5,24 @@
  * All rights reserved.
  */
 
-#if HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#include <config.h>
 #include <stdio.h>
-#if HAVE_STDLIB_H
-#  include <stdlib.h>
-#endif
+#include <stdlib.h>
 #include <stdarg.h>
-#if HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
-#if HAVE_TERMIOS_H
-#  include <termios.h>
-#endif
-#if HAVE_SYS_IOCTL_H
-#  include <sys/ioctl.h>
-#endif
-#ifdef HAVE_LIBUTIL_H
+#include <unistd.h>
+#include <termios.h>
+#include <sys/ioctl.h>
+/* openpty() */
+#if HAVE_LIBUTIL_H
 #  include <libutil.h>
 #endif
-#ifdef HAVE_UTIL_H
+#if HAVE_UTIL_H
 #  include <util.h>
 #endif
 #if HAVE_PTY_H
 #  include <pty.h>
 #endif
-#ifndef HAVE_LIBUTIL
+#ifndef HAVE_OPENPTY
 #  include <fcntl.h>
 #endif
 #if defined(HAVE_STROPTS_H) && !defined(__linux__)
@@ -45,7 +36,8 @@ static struct termios init_term;
 
 #ifndef HAVE_CFMAKERAW
 
-int cfmakeraw(struct termios *term_p)
+static void
+cfmakeraw_compat(struct termios *term_p)
 {
     term_p->c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON);
     term_p->c_oflag &= ~OPOST;
@@ -54,8 +46,8 @@ int cfmakeraw(struct termios *term_p)
     term_p->c_cflag |= CS8;
     term_p->c_cc[VMIN] = 1;
     term_p->c_cc[VTIME] = 0;
-    return 0;
 }
+#define cfmakeraw cfmakeraw_compat
 
 #endif
 
@@ -64,7 +56,7 @@ init(int *mfd_p, int *sfd_p)
 {
     struct termios term;
     struct winsize win;
-#ifndef HAVE_LIBUTIL
+#ifndef HAVE_OPENPTY
     char *slave;
 #endif
 
@@ -74,7 +66,7 @@ init(int *mfd_p, int *sfd_p)
 	fatal("tcgetattr()");
     if (ioctl(STDIN_FILENO, TIOCGWINSZ, &win) < 0)
 	fatal("ioctl TIOCGWINSZ");
-#ifdef HAVE_LIBUTIL
+#ifdef HAVE_OPENPTY
     if (openpty(mfd_p, sfd_p, NULL, &term, &win) < 0)
 	fatal("openpty()");
 #else
@@ -89,7 +81,7 @@ init(int *mfd_p, int *sfd_p)
     ioctl(*sfd_p, I_PUSH, "ptem");
     ioctl(*sfd_p, I_PUSH, "ldterm");
 #endif
-#endif /* HAVE_LIBUTIL */
+#endif /* HAVE_OPENPTY */
     init_tty(*mfd_p, &term, &win);
 }
 

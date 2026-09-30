@@ -2,9 +2,7 @@
  * Tests for the code conversion layer
  */
 
-#if HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#include <config.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
