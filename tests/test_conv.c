@@ -167,6 +167,7 @@ test_l10n_cjk_uni(void)
     size_t c;
 
     CHECK(skip_width("A", 1, &c) == 1 && c == 1);
+    CHECK(skip_width("\x0b", 1, &c) == 1 && c == 1);	/* U+000B */
     CHECK(skip_width("\xef\xbc\x81", 3, &c) == 2 && c == 3);	/* U+FF01 */
     CHECK(skip_width("\xe3\x81\x82", 3, &c) == 2 && c == 3);	/* U+3042 */
     CHECK(skip_width("\xe3\x80\x9f", 3, &c) == 2 && c == 3);	/* U+301F (bit 31 of a table word) */
