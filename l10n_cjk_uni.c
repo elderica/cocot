@@ -109,7 +109,7 @@ l10n_cjk_uni_skip(const char **spp, size_t *scp)
 	goto error;
     }
     if (ch < 0x010000) { /* BMP */
-	w = (cjk_width[ch / 32] & (1 << (ch % 32))) ? 2 : 1;
+	w = (cjk_width[ch / 32] & (1UL << (ch % 32))) ? 2 : 1;
     } else if (ch < 0x020000) { /* N */
 	w = 1;
     } else if (ch < 0x0e0000) { /* W */
