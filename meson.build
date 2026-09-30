@@ -62,20 +62,24 @@ cdata.set('HAVE_MALLOC', 1)
 
 configure_file(output : 'config.h', configuration : cdata)
 
-sources = files(
+conv_lib = static_library('cocotconv',
   'ccio.c',
-  'cocot.c',
-  'init.c',
   'l10n_cjk_uni.c',
   'l10n_cjk_uni_table.c',
   'l10n_ja.c',
-  'loop.c',
   'malloc.c',
+  c_args : ['-DHAVE_CONFIG_H'],
+  dependencies : deps)
+
+executable('cocot',
+  'cocot.c',
+  'init.c',
+  'loop.c',
   'sigwinch.c',
   'suspend.c',
-)
-
-executable('cocot', sources,
   c_args : ['-DHAVE_CONFIG_H'],
+  link_with : conv_lib,
   dependencies : deps,
   install : true)
+
+subdir('tests')
