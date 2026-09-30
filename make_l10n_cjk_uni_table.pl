@@ -1,69 +1,57 @@
 #!/usr/bin/perl
+#
+# Generate l10n_cjk_uni_table.c from EastAsianWidth.txt.
+#
+# Code points whose East_Asian_Width is W (Wide), F (Fullwidth) or
+# A (Ambiguous) occupy two columns on a CJK terminal. They are emitted
+# as a sorted list of merged ranges; everything else is one column.
 
 use strict;
+use warnings;
 
-use FileHandle;
+my %wide = map { $_ => 1 } qw(W F A);
 
-my %width = ( N  => 1,
-	      Na => 1, # Nallow
-	      W  => 2, # Wide
-	      H  => 1, # HalfWidth
-	      F  => 2, # FullWidth
-	      A  => 2, # Anbiguous
-	    );
+my $file = shift // 'EastAsianWidth.txt';
+open(my $in, '<', $file) or die "$file: $!\n";
 
-sub main {
-    print STDERR "Processing";
-    my $ifh = new FileHandle("EastAsianWidth.txt");
-    my $bit = new Bit;
-    while (<$ifh>) {
-	next if (/^\s*\#/);
-	my ($from, $to, $type) = /([\da-f]+)(?:\.\.([\da-f]+))?;(\w+)/i
-	    or next;
-	$to = $from unless defined($to);
-	last if (length($to) > 4); # only in BMP
-	if ($width{$type} == 2) {
-	    foreach my $code (hex($from)..hex($to)) {
-		$bit->set($code);
-	    }
-	}
-	print STDERR ".";
+my $version;
+my @ranges;
+while (<$in>) {
+    $version //= $1 if /^#\s*(EastAsianWidth-[\d.]+)\.txt/;
+    next if /^\s*(#|$)/;
+    my ($from, $to, $type) = /^([0-9A-F]+)(?:\.\.([0-9A-F]+))?\s*;\s*(\w+)/i
+	or die "$file:$.: unexpected line: $_";
+    next unless $wide{$type};
+    push @ranges, [hex($from), hex($to // $from)];
+}
+close($in);
+die "$file: no version header\n" unless defined $version;
+
+my @merged;
+for my $r (sort { $a->[0] <=> $b->[0] } @ranges) {
+    if (@merged && $r->[0] <= $merged[-1][1] + 1) {
+	$merged[-1][1] = $r->[1] if $r->[1] > $merged[-1][1];
+    } else {
+	push @merged, [@$r];
     }
-    $ifh->close;
-    print STDERR "Done\n";
-    my $cnt = 0;
-    print <<EOF;
+}
+
+print <<EOF;
+/*
+ * Two-column code points (East_Asian_Width W, F and A)
+ *
+ * Generated from $version.txt by make_l10n_cjk_uni_table.pl.
+ * Do not edit.
+ */
+
 #include "l10n_cjk_uni_table.h"
 
-unsigned long cjk_width[CJK_WIDTH_LENGTH] = {
+const struct cjk_width_range cjk_wide_ranges[] = {
 EOF
-    foreach my $word (@$bit) {
-	print "    " unless $cnt;
-	printf("0x%08x", $word);
-	$cnt = ($cnt + 1) % 4;
-	if ($cnt) {
-	    print ", ";
-	} else {
-	    print ",\n";
-	}
-    }
-    print "};\n";
-}
+printf("    { 0x%06x, 0x%06x },\n", @$_) for @merged;
+print <<EOF;
+};
 
-main;
-
-package Bit;
-
-sub new {
-    my $class = shift;
-    my $self = [];
-    @$self = (0) x (0x10000 / 32);
-    return bless($self, $class);
-}
-
-sub set {
-    my ($self, $code) = @_;
-    my $index = int($code / 32);
-    my $bit   = $code % 32;
-    $self->[$index] |= (1 << $bit);
-}
+const size_t cjk_wide_ranges_count =
+    sizeof(cjk_wide_ranges) / sizeof(cjk_wide_ranges[0]);
+EOF

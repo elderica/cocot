@@ -6,13 +6,29 @@
  */
 
 #include <config.h>
-#include <sys/types.h>
-#include <iconv.h>
-#include <errno.h>
+#include <stdint.h>
 #include "l10n_cjk_uni.h"
 #include "l10n_cjk_uni_table.h"
 
 #define IS_NOT_TRAILING_BYTE(ch) (((ch) & 0xc0) != 0x80)
+
+/* binary search in the table of two-column code points */
+static int
+is_wide(uint32_t ch)
+{
+    size_t lo = 0, hi = cjk_wide_ranges_count;
+
+    while (lo < hi) {
+	size_t mid = lo + (hi - lo) / 2;
+	if (ch < cjk_wide_ranges[mid].first)
+	    hi = mid;
+	else if (ch > cjk_wide_ranges[mid].last)
+	    lo = mid + 1;
+	else
+	    return 1;
+    }
+    return 0;
+}
 
 /*
  * Skip one character that could not be converted and return its width.
@@ -23,8 +39,7 @@ l10n_cjk_uni_skip(const char **spp, size_t *scp)
 {
     const unsigned char *sp = (const unsigned char *) *spp;
     size_t cb, i;
-    unsigned long ch, min;
-    int w;
+    uint32_t ch, min;
 
     if (sp[0] < 0x80) {
 	cb = 1, ch = sp[0], min = 0;
@@ -47,20 +62,9 @@ l10n_cjk_uni_skip(const char **spp, size_t *scp)
     /* overlong forms, surrogates and code points beyond U+10FFFF */
     if (ch < min || ch > 0x10ffff || (0xd800 <= ch && ch <= 0xdfff))
 	goto error;
-    if (ch < 0x010000) { /* BMP */
-	w = (cjk_width[ch / 32] & (1UL << (ch % 32))) ? 2 : 1;
-    } else if (ch < 0x020000) { /* N */
-	w = 1;
-    } else if (ch < 0x0e0000) { /* W */
-	w = 2;
-    } else if (ch < 0x0e0100) { /* N */
-	w = 1;
-    } else { /* A */
-	w = 2;
-    }
     *spp += cb;
     *scp -= cb;
-    return w;
+    return is_wide(ch) ? 2 : 1;
 
 error:
     (*spp)++;
