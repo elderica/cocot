@@ -10,18 +10,17 @@ if [ ! -d bin ]; then
   mkdir bin
 fi
 
-if [ -f Makefile ]; then
-  make distclean
-fi
-
 for proc_code in $PROC_CODE_LIST; do
   echo "** Build by $TERM_CODE / $proc_code"
-  ./configure \
+  builddir=build-$proc_code
+  rm -rf $builddir
+  meson setup $builddir \
     --prefix=$PREFIX \
-    --with-default-term-code=$TERM_CODE \
-    --with-default-proc-code=$proc_code
-  make
-  strip -x cocot.exe
-  cp -v cocot.exe bin/cocot-$proc_code.exe
-  make distclean
+    --buildtype=release \
+    -Ddefault_term_code=$TERM_CODE \
+    -Ddefault_proc_code=$proc_code
+  meson compile -C $builddir
+  strip -x $builddir/cocot.exe
+  cp -v $builddir/cocot.exe bin/cocot-$proc_code.exe
+  rm -rf $builddir
 done

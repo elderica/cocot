@@ -32,21 +32,14 @@ Copyright (c) 2002-2017  IWAMURO Motonori  All rights reserved.
 
 2.2 ビルド／インストール手順
 
-  ビルド／インストールの手順は、一般的なautotoolsベースのツールと同様です。
-  ターミナルエミュレータやプロセスのエンコーディングを変更したい場合は、
-  --with-default-term-code、--with-default-proc-code を指定してください。
-  デフォルトはターミナルが UTF-8、プロセスが CP932 となっています。
-
-    ./configure [--with-default-term-code=CODE] [--with-default-proc-code=CODE]
-    make
-    make install
-
-  Meson を使ってビルド／インストールすることもできます。エンコーディン
-  グのデフォルト値は -Ddefault_term_code、-Ddefault_proc_code で指定で
-  きます。
+  ビルドには Meson と Ninja が必要です。ターミナルエミュレータやプロセ
+  スのエンコーディングのデフォルト値を変更したい場合は、
+  -Ddefault_term_code、-Ddefault_proc_code を指定してください。デフォ
+  ルトはターミナルが UTF-8、プロセスが CP932 となっています。
 
     meson setup build [-Ddefault_term_code=CODE] [-Ddefault_proc_code=CODE]
     meson compile -C build
+    meson test -C build
     meson install -C build
 
 
@@ -129,11 +122,11 @@ ja_JP.eucJP
   -t TERM_CODE
   -t TERM_INPUT_CODE,TERM_OUTPUT_CODE
 		 ターミナルの文字コードを指定します。
-                 デフォルトはUTF-8。(configureオプションで変更可)
+                 デフォルトはUTF-8。(ビルド時のMesonオプションで変更可)
   -p PROC_CODE
   -p PROC_INPUT_CODE,PROC_OUTPUT_CODE
 		 コマンドプロセスの文字コードを指定します。
-                 デフォルトはCP932。(configureオプションで変更可)
+                 デフォルトはCP932。(ビルド時のMesonオプションで変更可)
   -i		 ISO-2022-JPのエスケープシーケンスを無視します。
   -n		 無変換モードにします。-oオプションを組み合わせて、script(1)
 		 の代わりに使用します。

@@ -8,7 +8,7 @@ else
   echo "* Dry run mode."
 fi
 
-ver=`perl -nle '/^AC_INIT\([^,]+,\[([^\]]+)\]\)/ && print $1' configure.ac`
+ver=`sed -n "s/^ *version *: *'\([^']*\)'.*/\1/p" meson.build`
 
 cmd="git tag -f cocot-$ver"
 
