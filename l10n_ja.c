@@ -43,7 +43,7 @@ l10n_ja_open(int dec_jis)
     if ((ja = malloc(sizeof(L10N_JA))) == NULL)
 	return (void *) -1;
     ja->jis = dec_jis ? ST_ASCII : ST_NO_DECODE;
-    ja->nc_s[0] = 0x81; /*g h*/
+    ja->nc_s[0] = 0x81; /*â€œâ–¡â€*/
     ja->nc_s[1] = 0xa0;
     ja->nc_e[0] = 0xa2;
     ja->nc_e[1] = 0xa2;
@@ -68,7 +68,7 @@ l10n_ja_eucj2sjis(void *ja,
     int sc, dc;
     int jis;
     int c, d;
-    int nc_cnt = 0; /* •ÏŠ·Œ³‚É‚ ‚Á‚Ä•ÏŠ·æ‚É‚È‚¢•¶š‚Ì” */
+    int nc_cnt = 0; /* å¤‰æ›å…ƒã«ã‚ã£ã¦å¤‰æ›å…ˆã«ãªã„æ–‡å­—ã®æ•° */
 
     sp = (const unsigned char *) *spp;
     sc = *scp;
