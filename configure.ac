@@ -1,60 +1,66 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
+AC_PREREQ([2.69])
 AC_INIT([cocot],[1.2-20171118])
-AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([cocot.c])
+AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 
 # Checks for programs.
 AC_PROG_CC
-AC_PROG_INSTALL
+AC_USE_SYSTEM_EXTENSIONS
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-liconv':
-AC_CHECK_LIB([iconv], [main])
-AC_CHECK_LIB([util], [openpty],,
-	[AC_CHECK_FILE([/dev/ptmx], [AC_CHECK_HEADERS([stropts.h])])])
+
+# iconv() is in libc or in libiconv. GNU libiconv renames the functions
+# with macros in <iconv.h>, so check by linking a program that uses it.
+AC_CHECK_HEADERS([iconv.h],,[AC_MSG_ERROR([iconv.h is not available])])
+AC_CACHE_CHECK([for library containing iconv], [cocot_cv_lib_iconv], [
+  cocot_cv_lib_iconv=no
+  cocot_save_LIBS=$LIBS
+  for cocot_lib in '' -liconv; do
+    LIBS="$cocot_lib $cocot_save_LIBS"
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <iconv.h>]],
+      [[iconv_t cd = iconv_open("", "");
+        iconv(cd, 0, 0, 0, 0);
+        iconv_close(cd);]])],
+      [cocot_cv_lib_iconv=${cocot_lib:-"none required"}; break])
+  done
+  LIBS=$cocot_save_LIBS])
+AS_CASE([$cocot_cv_lib_iconv],
+  [no], [AC_MSG_ERROR([iconv is not available])],
+  ["none required"], [],
+  [LIBS="$cocot_cv_lib_iconv $LIBS"])
+
+# openpty() and login_tty() are in libc or libutil depending on the platform.
+AC_SEARCH_LIBS([openpty], [util])
+AC_SEARCH_LIBS([login_tty], [util])
+AC_CHECK_FUNCS([openpty login_tty cfmakeraw])
 
 # Checks for header files.
-AC_CHECK_HEADERS([iconv.h],,[AC_MSG_ERROR(iconv.h is not available)])
-AC_HEADER_STDC
-AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([stdlib.h string.h sys/ioctl.h sys/time.h termios.h unistd.h utmp.h])
-AC_CHECK_HEADERS([libutil.h util.h pty.h])
-AC_CHECK_HEADERS([signal.h])
-
-# Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-AC_TYPE_PID_T
-AC_TYPE_SIZE_T
-AC_C_VOLATILE
-
-# Checks for library functions.
-AC_FUNC_FORK
-AC_PROG_GCC_TRADITIONAL
-AC_FUNC_MALLOC
-AC_FUNC_SELECT_ARGTYPES
-AC_FUNC_SETVBUF_REVERSED
-AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([memcpy memmove memset select strerror])
-AC_CHECK_FUNCS([max cfmakeraw])
-AC_CHECK_FUNCS([login_tty])
+AC_CHECK_HEADERS([stdlib.h string.h sys/ioctl.h sys/time.h sys/types.h sys/wait.h termios.h unistd.h signal.h])
+# Headers declaring openpty()/login_tty() vary between platforms.
+AC_CHECK_HEADERS([utmp.h libutil.h util.h pty.h])
+# Without openpty(), STREAMS modules may have to be pushed (e.g. Solaris).
+AS_IF([test "x$ac_cv_func_openpty" != xyes], [AC_CHECK_HEADERS([stropts.h])])
 
 # DEFAULT_TERM_CODE
-AC_ARG_WITH(default-term-code,
-        [  --with-default-term-code=CODE	specify default value for term code (default is UTF-8)],
-	[DEFAULT_TERM_CODE=$withval],
-	[DEFAULT_TERM_CODE="UTF-8"])
-AC_DEFINE_UNQUOTED(DEFAULT_TERM_CODE, "$DEFAULT_TERM_CODE", [default value for term code])
+AC_ARG_WITH([default-term-code],
+  [AS_HELP_STRING([--with-default-term-code=CODE],
+    [specify default value for term code (default is UTF-8)])],
+  [DEFAULT_TERM_CODE=$withval],
+  [DEFAULT_TERM_CODE="UTF-8"])
+AC_DEFINE_UNQUOTED([DEFAULT_TERM_CODE], ["$DEFAULT_TERM_CODE"], [default value for term code])
 
 # DEFAULT_PROC_CODE
-AC_ARG_WITH(default-proc-code,
-        [  --with-default-proc-code=CODE	specify default value for proc code (default is CP932)],
-	[DEFAULT_PROC_CODE=$withval],
-	[DEFAULT_PROC_CODE="CP932"])
-AC_DEFINE_UNQUOTED(DEFAULT_PROC_CODE, "$DEFAULT_PROC_CODE", [default value for proc code])
+AC_ARG_WITH([default-proc-code],
+  [AS_HELP_STRING([--with-default-proc-code=CODE],
+    [specify default value for proc code (default is CP932)])],
+  [DEFAULT_PROC_CODE=$withval],
+  [DEFAULT_PROC_CODE="CP932"])
+AC_DEFINE_UNQUOTED([DEFAULT_PROC_CODE], ["$DEFAULT_PROC_CODE"], [default value for proc code])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

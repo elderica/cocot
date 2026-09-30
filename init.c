@@ -62,7 +62,7 @@ init(int *mfd_p, int *sfd_p)
 {
     struct termios term;
     struct winsize win;
-#ifndef HAVE_LIBUTIL
+#ifndef HAVE_OPENPTY
     char *slave;
 #endif
 
@@ -72,7 +72,7 @@ init(int *mfd_p, int *sfd_p)
 	fatal("tcgetattr()");
     if (ioctl(STDIN_FILENO, TIOCGWINSZ, &win) < 0)
 	fatal("ioctl TIOCGWINSZ");
-#ifdef HAVE_LIBUTIL
+#ifdef HAVE_OPENPTY
     if (openpty(mfd_p, sfd_p, NULL, &term, &win) < 0)
 	fatal("openpty()");
 #else
@@ -87,7 +87,7 @@ init(int *mfd_p, int *sfd_p)
     ioctl(*sfd_p, I_PUSH, "ptem");
     ioctl(*sfd_p, I_PUSH, "ldterm");
 #endif
-#endif /* HAVE_LIBUTIL */
+#endif /* HAVE_OPENPTY */
     init_tty(*mfd_p, &term, &win);
 }
 
