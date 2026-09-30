@@ -35,7 +35,7 @@ sub main {
     print <<EOF;
 #include "l10n_cjk_uni_table.h"
 
-unsigned long cjk_width[CJK_WIDTH_LENGTH] = {
+const uint32_t cjk_width[CJK_WIDTH_LENGTH] = {
 EOF
     foreach my $word (@$bit) {
 	print "    " unless $cnt;
