@@ -138,15 +138,14 @@ ccio_write(CCIO *c, int fd)
 	    if (writen(fd, buf, n) == CCIO_ERROR)
 		return CCIO_ERROR;
 	}
-	if (rv != -1) {
-	    c->len = 0;
+	if (rv != (size_t) -1)
 	    break;
-	}
 	switch (errno) {
 	case EINVAL:
+	    /* keep the incomplete sequence for the next read */
 	    memmove(c->buf, ibuf, icnt);
 	    c->len = icnt;
-	    goto loopout;
+	    return CCIO_SUCCESS;
 	case EILSEQ:
 	    n = c->skip(&ibuf, &icnt);
 	    do {
@@ -157,6 +156,6 @@ ccio_write(CCIO *c, int fd)
 	    break;
 	}
     }
-loopout:
+    c->len = 0;
     return CCIO_SUCCESS;
 }
