@@ -34,8 +34,8 @@
 #if HAVE_UTIL_H
 #  include <util.h>
 #endif
-#if !defined(HAVE_LOGIN_TTY) && defined(HAVE_TERMIOS_H)
-#  include <termios.h>
+#ifndef HAVE_LOGIN_TTY
+#  include <sys/ioctl.h>
 #endif
 #if HAVE_LIBUTIL_H
 #  include <libutil.h>
