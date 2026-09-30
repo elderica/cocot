@@ -1,0 +1,4 @@
+option('default_term_code', type : 'string', value : 'UTF-8',
+  description : 'Default value for term code')
+option('default_proc_code', type : 'string', value : 'CP932',
+  description : 'Default value for proc code')

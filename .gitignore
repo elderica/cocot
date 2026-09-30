@@ -13,3 +13,4 @@ tmp/
 /cocot
 /cocot.exe
 *.log
+/build/

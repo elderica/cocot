@@ -41,6 +41,14 @@ Copyright (c) 2002-2017  IWAMURO Motonori  All rights reserved.
     make
     make install
 
+  Meson を使ってビルド／インストールすることもできます。エンコーディン
+  グのデフォルト値は -Ddefault_term_code、-Ddefault_proc_code で指定で
+  きます。
+
+    meson setup build [-Ddefault_term_code=CODE] [-Ddefault_proc_code=CODE]
+    meson compile -C build
+    meson install -C build
+
 
 3 環境設定
 
