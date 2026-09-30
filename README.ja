@@ -41,6 +41,12 @@ Copyright (c) 2002-2017  IWAMURO Motonori  All rights reserved.
     make
     make install
 
+  gitリポジトリから取得したソースには configure が含まれていません。
+  Autoconf、Automake を用意したうえで、最初に次のコマンドで生成してく
+  ださい。(配布用の tarball には configure が含まれています)
+
+    autoreconf -fi
+
 
 3 環境設定
 
