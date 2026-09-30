@@ -5,28 +5,19 @@
  * All rights reserved.
  */
 
-#if HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#include <config.h>
 #include <stdio.h>
-#if HAVE_STDLIB_H
-#  include <stdlib.h>
-#endif
-#if HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <signal.h>
+#include <getopt.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+/* login_tty() */
 #if HAVE_UTMP_H
 #  include <utmp.h>
-#endif
-#if HAVE_STRING_H
-#  include <string.h>
-#endif
-#include <errno.h>
-#if HAVE_SYS_TYPES_H
-#  include <sys/types.h>
-#endif
-#if HAVE_SYS_WAIT_H
-#  include <sys/wait.h>
 #endif
 #if HAVE_LIBUTIL_H
 #  include <libutil.h>
@@ -37,16 +28,6 @@
 #ifndef HAVE_LOGIN_TTY
 #  include <sys/ioctl.h>
 #endif
-#if HAVE_LIBUTIL_H
-#  include <libutil.h>
-#endif
-#if HAVE_UTIL_H
-#  include <util.h>
-#endif
-#if HAVE_SIGNAL_H
-#  include <signal.h>
-#endif
-#include <getopt.h>
 
 #include "init.h"
 #include "loop.h"

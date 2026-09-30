@@ -8,6 +8,8 @@
 #ifndef L10N_CJK_UNI_H
 #define L10N_CJK_UNI_H
 
+#include <stddef.h>
+
 int
 l10n_cjk_uni_skip(const char **spp, size_t *scp);
 

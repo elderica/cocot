@@ -5,27 +5,18 @@
  * All rights reserved.
  */
 
-#if HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#include <config.h>
 #include <stdio.h>
-#if HAVE_STDLIB_H
-#  include <stdlib.h>
-#endif
+#include <stdlib.h>
 #include <stdarg.h>
-#if HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
-#if HAVE_TERMIOS_H
-#  include <termios.h>
-#endif
-#if HAVE_SYS_IOCTL_H
-#  include <sys/ioctl.h>
-#endif
-#ifdef HAVE_LIBUTIL_H
+#include <unistd.h>
+#include <termios.h>
+#include <sys/ioctl.h>
+/* openpty() */
+#if HAVE_LIBUTIL_H
 #  include <libutil.h>
 #endif
-#ifdef HAVE_UTIL_H
+#if HAVE_UTIL_H
 #  include <util.h>
 #endif
 #if HAVE_PTY_H

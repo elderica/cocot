@@ -5,24 +5,12 @@
  * All rights reserved.
  */
 
-#if HAVE_CONFIG_H
-#  include <config.h>
-#endif
-#if HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
-#if HAVE_SYS_TYPES_H
-#  include <sys/types.h>
-#endif
-#if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-#endif
-#if HAVE_STRING_H
-#  include <string.h>
-#endif
-#if HAVE_SIGNAL_H
-#  include <signal.h>
-#endif
+#include <config.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/select.h>
+#include <string.h>
+#include <signal.h>
 #include <errno.h>
 
 #include "init.h"

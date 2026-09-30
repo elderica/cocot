@@ -42,7 +42,6 @@ AC_SEARCH_LIBS([login_tty], [util])
 AC_CHECK_FUNCS([openpty login_tty cfmakeraw])
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdlib.h string.h sys/ioctl.h sys/time.h sys/types.h sys/wait.h termios.h unistd.h signal.h])
 # Headers declaring openpty()/login_tty() vary between platforms.
 AC_CHECK_HEADERS([utmp.h libutil.h util.h pty.h])
 # Without openpty(), STREAMS modules may have to be pushed (e.g. Solaris).

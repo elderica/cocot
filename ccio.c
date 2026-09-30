@@ -5,15 +5,10 @@
  * All rights reserved.
  */
 
-#if HAVE_CONFIG_H
-#  include <config.h>
-#endif
-#if HAVE_STRING_H
-#  include <string.h>
-#endif
-#if HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
+#include <config.h>
+#include <string.h>
+#include <strings.h>
+#include <unistd.h>
 #include <errno.h>
 
 #include "l10n_ja.h"

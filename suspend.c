@@ -1,16 +1,8 @@
-#if HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#include <config.h>
 #include <errno.h>
-#if HAVE_SIGNAL_H
-#  include <signal.h>
-#endif
-#if HAVE_STRING_H
-#  include <string.h>
-#endif
-#if HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
+#include <signal.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "init.h"
 #include "suspend.h"
