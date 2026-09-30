@@ -68,6 +68,9 @@ test_ccio_iconv(void)
     CHECK(c.len == 0);
 
     /* an unconvertible wide character is replaced by two columns */
+    n = run_ccio_write(&c, "\xf0\x9f\x98\x80", 4, out, sizeof(out));	/* U+1F600 */
+    CHECK(n == 2 && MEMEQ(out, "##"));
+    CHECK(c.len == 0);
     n = run_ccio_write(&c, "\xf0\xa0\x80\x80" "a", 5, out, sizeof(out));	/* U+20000 */
     CHECK(n == 3 && MEMEQ(out, "##a"));
     CHECK(c.len == 0);
@@ -172,6 +175,7 @@ test_l10n_cjk_uni(void)
     CHECK(skip_width("\xe3\x81\x82", 3, &c) == 2 && c == 3);	/* U+3042 */
     CHECK(skip_width("\xe3\x80\x9f", 3, &c) == 2 && c == 3);	/* U+301F (bit 31 of a table word) */
     CHECK(skip_width("\xf0\xa0\x80\x80", 4, &c) == 2 && c == 4);	/* U+20000 */
+    CHECK(skip_width("\xf0\x9f\x98\x80", 4, &c) == 2 && c == 4);	/* U+1F600 emoji */
     CHECK(skip_width("\xf0\x90\x80\x80", 4, &c) == 1 && c == 4);	/* U+10000 */
     CHECK(skip_width("\xf3\xa0\x80\x81", 4, &c) == 1 && c == 4);	/* U+E0001 */
     CHECK(skip_width("\xf3\xa0\x84\x80", 4, &c) == 2 && c == 4);	/* U+E0100 (A) */

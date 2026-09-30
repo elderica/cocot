@@ -1,6 +1,6 @@
 #!/bin/sh -x
 
-UNICODE_VERSION=5.0.0
+UNICODE_VERSION=18.0.0
 
 if [ ! -f EastAsianWidth.txt ] ||
    ! head -1 EastAsianWidth.txt | grep -q "EastAsianWidth-$UNICODE_VERSION.txt"; then
