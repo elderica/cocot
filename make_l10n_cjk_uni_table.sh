@@ -1,7 +1,11 @@
 #!/bin/sh -x
 
-if [ ! -f EastAsianWidth.txt ]; then
-    wget https://www.unicode.org/Public/5.0.0/ucd/EastAsianWidth.txt
+UNICODE_VERSION=5.0.0
+
+if [ ! -f EastAsianWidth.txt ] ||
+   ! head -1 EastAsianWidth.txt | grep -q "EastAsianWidth-$UNICODE_VERSION.txt"; then
+    curl -fsSL -o EastAsianWidth.txt \
+	https://www.unicode.org/Public/$UNICODE_VERSION/ucd/EastAsianWidth.txt
 fi
 
-perl make_l10n_cjk_uni_table.pl > l10n_cjk_uni_table.c
+perl make_l10n_cjk_uni_table.pl EastAsianWidth.txt > l10n_cjk_uni_table.c

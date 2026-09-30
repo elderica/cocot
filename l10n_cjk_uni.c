@@ -33,6 +33,24 @@ static const unsigned char char_bytes[256] = {
 
 #define IS_NOT_TRAILING_BYTE(ch) (((ch) & 0xc0) != 0x80)
 
+/* binary search in the table of two-column code points */
+static int
+is_wide(size_t ch)
+{
+    size_t lo = 0, hi = cjk_wide_ranges_count;
+
+    while (lo < hi) {
+	size_t mid = lo + (hi - lo) / 2;
+	if (ch < cjk_wide_ranges[mid].first)
+	    hi = mid;
+	else if (ch > cjk_wide_ranges[mid].last)
+	    lo = mid + 1;
+	else
+	    return 1;
+    }
+    return 0;
+}
+
 int
 l10n_cjk_uni_skip(const char **spp, size_t *scp)
 {
@@ -102,17 +120,7 @@ l10n_cjk_uni_skip(const char **spp, size_t *scp)
     default:
 	goto error;
     }
-    if (ch < 0x010000) { /* BMP */
-	w = (cjk_width[ch / 32] & ((uint32_t) 1 << (ch % 32))) ? 2 : 1;
-    } else if (ch < 0x020000) { /* N */
-	w = 1;
-    } else if (ch < 0x0e0000) { /* W */
-	w = 2;
-    } else if (ch < 0x0e0100) { /* N */
-	w = 1;
-    } else { /* A */
-	w = 2;
-    }
+    w = is_wide(ch) ? 2 : 1;
     *spp += cb;
     *scp -= cb;
     return w;

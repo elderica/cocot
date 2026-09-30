@@ -172,6 +172,10 @@ test_l10n_cjk_uni(void)
     CHECK(skip_width("\xe3\x81\x82", 3, &c) == 2 && c == 3);	/* U+3042 */
     CHECK(skip_width("\xe3\x80\x9f", 3, &c) == 2 && c == 3);	/* U+301F (bit 31 of a table word) */
     CHECK(skip_width("\xf0\xa0\x80\x80", 4, &c) == 2 && c == 4);	/* U+20000 */
+    CHECK(skip_width("\xf0\x90\x80\x80", 4, &c) == 1 && c == 4);	/* U+10000 */
+    CHECK(skip_width("\xf3\xa0\x80\x81", 4, &c) == 1 && c == 4);	/* U+E0001 */
+    CHECK(skip_width("\xf3\xa0\x84\x80", 4, &c) == 2 && c == 4);	/* U+E0100 (A) */
+    CHECK(skip_width("\xf3\xb0\x80\x80", 4, &c) == 2 && c == 4);	/* U+F0000 (A) */
     CHECK(skip_width("\xe3\x81", 2, &c) == 1 && c == 1);	/* truncated */
 }
 
