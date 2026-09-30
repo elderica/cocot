@@ -71,7 +71,7 @@ show_version(void)
 }
 
 static void
-usage(int argc, char *argv[])
+usage(const char *progname)
 {
     fprintf(stderr,
 	    "Usage: %s [OPTIONS] [--] COMMAND ARG1 ARG2 ...\n"
@@ -89,7 +89,7 @@ usage(int argc, char *argv[])
 	    "    -n             no conversion. (like script(1))\n"
 	    "    -h, --help     show this message.\n"
 	    "    -v, --version  show version.\n",
-	    argv[0],
+	    progname,
 	    DEFAULT_TERM_CODE,
 	    DEFAULT_PROC_CODE);
     exit(1);
@@ -99,13 +99,13 @@ int
 main(int argc, char *argv[])
 {
     int c;
-    char *logfn = NULL;
-    char *logmd = "w";
+    const char *logfn = NULL;
+    const char *logmd = "w";
     FILE *logfp = NULL;
-    char *term_input_code  = DEFAULT_TERM_CODE;
-    char *term_output_code = DEFAULT_TERM_CODE;
-    char *proc_input_code  = DEFAULT_PROC_CODE;
-    char *proc_output_code = DEFAULT_PROC_CODE;
+    const char *term_input_code  = DEFAULT_TERM_CODE;
+    const char *term_output_code = DEFAULT_TERM_CODE;
+    const char *proc_input_code  = DEFAULT_PROC_CODE;
+    const char *proc_output_code = DEFAULT_PROC_CODE;
     char *p;
     int dec_jis = 1;
 
@@ -114,7 +114,7 @@ main(int argc, char *argv[])
     pid_t ppid, cpid, gcpid;
 
     if (argc == 1)
-	usage(argc, argv);
+	usage(argv[0]);
     /* "+": stop at the first non-option so COMMAND's options are kept */
     while ((c = getopt_long(argc, argv, "+ao:t:p:inhv",
 			    long_options, NULL)) != -1) {
@@ -151,18 +151,18 @@ main(int argc, char *argv[])
 	    proc_input_code = proc_output_code = NULL;
 	    break;
 	case 'h':
-	    usage(argc, argv);
+	    usage(argv[0]);
 	    break;
 	case 'v':
 	    show_version();
 	    break;
 	default:
-	    usage(argc, argv);
+	    usage(argv[0]);
 	    break;
 	}
     }
     if (optind >= argc)
-	usage(argc, argv);
+	usage(argv[0]);
     if (logfn) {
 	if ((logfp = fopen(logfn, logmd)) == NULL)
 	    fatal("Can't open file '%s' (%s).", logfn, strerror(errno));

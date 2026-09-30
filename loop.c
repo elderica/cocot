@@ -33,8 +33,8 @@
 
 void
 loop(int mfd, FILE *fp,
-     char *term_input_code, char *term_output_code,
-     char *proc_input_code, char *proc_output_code,
+     const char *term_input_code, const char *term_output_code,
+     const char *proc_input_code, const char *proc_output_code,
      int dec_jis)
 {
     CCIO master, slave;
