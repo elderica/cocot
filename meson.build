@@ -14,6 +14,12 @@ cdata.set_quoted('PACKAGE_VERSION', meson.project_version())
 cdata.set_quoted('PACKAGE_STRING', '@0@ @1@'.format(meson.project_name(), meson.project_version()))
 cdata.set_quoted('VERSION', meson.project_version())
 
+# Enable platform extensions (like AC_USE_SYSTEM_EXTENSIONS)
+foreach m : ['_GNU_SOURCE', '_DARWIN_C_SOURCE', '_NETBSD_SOURCE',
+             '_OPENBSD_SOURCE', '_ALL_SOURCE', '__EXTENSIONS__']
+  cdata.set(m, 1)
+endforeach
+
 cdata.set_quoted('DEFAULT_TERM_CODE', get_option('default_term_code'))
 cdata.set_quoted('DEFAULT_PROC_CODE', get_option('default_proc_code'))
 
