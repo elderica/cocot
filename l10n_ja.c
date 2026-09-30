@@ -189,6 +189,12 @@ l10n_ja_eucj2sjis(void *ja,
 		errno = E2BIG;
 		return -1;
 	    }
+	    if (sp[0] < 0xa0 || sp[0] == 0xff || sp[1] < 0xa0 || sp[1] == 0xff) {
+		WRITE_BACK(1);
+		errno = EILSEQ;
+		return -1;
+	    }
+	    sp += 2;
 	    *dp++ = JA_REF(ja, nc_s[0]);
 	    *dp++ = JA_REF(ja, nc_s[1]);
 	    sc -= 3;
