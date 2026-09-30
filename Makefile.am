@@ -15,6 +15,11 @@ AM_TESTS_ENVIRONMENT = UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1; export 
 
 EXTRA_DIST = ChangeLog.ja README.ja UNICODE_MEMO make_l10n_cjk_uni_table.sh make_l10n_cjk_uni_table.pl cygwin-build.sh cygwin-install.sh
 
+# regenerate l10n_cjk_uni_table.c from the Unicode data (needs Perl, curl)
+update-width-table:
+	cd $(srcdir) && sh make_l10n_cjk_uni_table.sh
+.PHONY: update-width-table
+
 # include a prebuilt binary (for Cygwin releases) when there is one
 dist-hook:
 	if test -f cocot.exe; then cp -p cocot.exe $(distdir)/; fi
