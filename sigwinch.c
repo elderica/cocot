@@ -25,6 +25,8 @@
 #endif
 #include <errno.h>
 
+#include "sigwinch.h"
+
 static struct sigaction oact;
 static int master_fileno;
 

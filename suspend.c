@@ -1,7 +1,7 @@
 #if HAVE_CONFIG_H
 #  include <config.h>
 #endif
-#include "errno.h"
+#include <errno.h>
 #if HAVE_SIGNAL_H
 #  include <signal.h>
 #endif
@@ -13,12 +13,13 @@
 #endif
 
 #include "init.h"
+#include "suspend.h"
 
 volatile sig_atomic_t do_tstp = 0;
 
 static struct sigaction oact;
 
-void
+static void
 sigtstp(int unused)
 {
 

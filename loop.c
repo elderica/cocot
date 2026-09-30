@@ -26,6 +26,7 @@
 #include <errno.h>
 
 #include "init.h"
+#include "loop.h"
 #include "sigwinch.h"
 #include "ccio.h"
 #include "suspend.h"
