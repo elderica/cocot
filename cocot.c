@@ -155,8 +155,13 @@ main(int argc, char *argv[])
 	case 'v':
 	    show_version();
 	    break;
+	default:
+	    usage(argc, argv);
+	    break;
 	}
     }
+    if (optind >= argc)
+	usage(argc, argv);
     if (logfn) {
 	if ((logfp = fopen(logfn, logmd)) == NULL)
 	    fatal("Can't open file '%s' (%s).", logfn, strerror(errno));
