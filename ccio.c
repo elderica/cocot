@@ -61,7 +61,7 @@ ccio_skip(const char **spp, size_t *scp)
 }
 
 CCIO_STATUS
-ccio_init(CCIO *c, char *tocode, char *fromcode, int dec_jis)
+ccio_init(CCIO *c, const char *tocode, const char *fromcode, int dec_jis)
 {
     memset(c, 0, sizeof(CCIO));
 

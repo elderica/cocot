@@ -39,7 +39,7 @@ typedef struct CCIO {
 } CCIO;
 
 CCIO_STATUS
-ccio_init(CCIO *c, char *tocode, char *fromcode, int dec_jis);
+ccio_init(CCIO *c, const char *tocode, const char *fromcode, int dec_jis);
 
 void
 ccio_done(CCIO *c);
