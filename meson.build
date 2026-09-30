@@ -72,3 +72,10 @@ executable('cocot',
   install : true)
 
 subdir('tests')
+
+# Regenerate l10n_cjk_uni_table.c from the Unicode data:
+#   meson compile -C build update-width-table
+run_target('update-width-table',
+  command : [find_program('make_l10n_cjk_uni_table.py'),
+             '-i', meson.current_source_dir() / 'EastAsianWidth.txt',
+             '-o', meson.current_source_dir() / 'l10n_cjk_uni_table.c'])

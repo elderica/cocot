@@ -1,7 +1,7 @@
 /*
  * Two-column code points (East_Asian_Width W, F and A)
  *
- * Generated from EastAsianWidth-18.0.0.txt by make_l10n_cjk_uni_table.pl.
+ * Generated from EastAsianWidth-18.0.0.txt by make_l10n_cjk_uni_table.py.
  * Do not edit.
  */
 
