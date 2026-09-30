@@ -22,3 +22,8 @@ tmp/
 /configure
 /configure~
 /cocot-*.tar.*
+# build and test outputs
+*.a
+*.trs
+.dirstamp
+/tests/test_conv
