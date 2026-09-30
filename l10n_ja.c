@@ -41,7 +41,7 @@ l10n_ja_open(int dec_jis)
     L10N_JA *ja;
 
     if ((ja = malloc(sizeof(L10N_JA))) == NULL)
-	return (void *) -1;
+	return NULL;
     ja->jis = dec_jis ? ST_ASCII : ST_NO_DECODE;
     ja->nc_s[0] = 0x81; /*“□”*/
     ja->nc_s[1] = 0xa0;
