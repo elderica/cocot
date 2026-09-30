@@ -30,9 +30,8 @@
 
 typedef struct L10N_JA {
     int jis;
-    char nc_a;
-    char nc_s[2];
-    char nc_e[2];
+    unsigned char nc_s[2];
+    unsigned char nc_e[2];
 } L10N_JA;
 
 void *
