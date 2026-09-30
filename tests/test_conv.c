@@ -67,6 +67,11 @@ test_ccio_iconv(void)
     CHECK(n == 4 && MEMEQ(out, "abc#"));
     CHECK(c.len == 0);
 
+    /* an unconvertible wide character is replaced by two columns */
+    n = run_ccio_write(&c, "\xf0\xa0\x80\x80" "a", 5, out, sizeof(out));	/* U+20000 */
+    CHECK(n == 3 && MEMEQ(out, "##a"));
+    CHECK(c.len == 0);
+
     ccio_done(&c);
 }
 
