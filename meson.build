@@ -19,25 +19,20 @@ endforeach
 cdata.set_quoted('DEFAULT_TERM_CODE', get_option('default_term_code'))
 cdata.set_quoted('DEFAULT_PROC_CODE', get_option('default_proc_code'))
 
-deps = []
-
 # iconv (in libc or libiconv)
-deps += dependency('iconv')
+iconv_dep = dependency('iconv')
 
 # openpty() and login_tty() are in libc or libutil depending on the platform
 util_dep = cc.find_library('util', required : false)
-use_util = false
+pty_deps = []
 foreach f : ['openpty', 'login_tty']
   if cc.has_function(f)
     cdata.set('HAVE_' + f.to_upper(), 1)
   elif util_dep.found() and cc.has_function(f, dependencies : util_dep)
     cdata.set('HAVE_' + f.to_upper(), 1)
-    use_util = true
+    pty_deps = [util_dep]
   endif
 endforeach
-if use_util
-  deps += util_dep
-endif
 
 # Headers declaring openpty()/login_tty() vary between platforms
 foreach h : ['utmp.h', 'libutil.h', 'util.h', 'pty.h']
@@ -62,7 +57,10 @@ conv_lib = static_library('cocotconv',
   'l10n_cjk_uni.c',
   'l10n_cjk_uni_table.c',
   'l10n_ja.c',
-  dependencies : deps)
+  # link iconv only once, through conv_dep
+  dependencies : iconv_dep.partial_dependency(compile_args : true, includes : true))
+
+conv_dep = declare_dependency(link_with : conv_lib, dependencies : iconv_dep)
 
 executable('cocot',
   'cocot.c',
@@ -70,8 +68,7 @@ executable('cocot',
   'loop.c',
   'sigwinch.c',
   'suspend.c',
-  link_with : conv_lib,
-  dependencies : deps,
+  dependencies : [conv_dep, pty_deps],
   install : true)
 
 subdir('tests')
