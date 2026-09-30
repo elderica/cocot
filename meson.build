@@ -2,7 +2,7 @@ project('cocot', 'c',
   version : '1.2-20171118',
   license : 'BSD-3-Clause',
   meson_version : '>= 0.60.0',
-  default_options : ['c_std=gnu17', 'warning_level=1'])
+  default_options : ['warning_level=1'])
 
 cc = meson.get_compiler('c')
 cdata = configuration_data()

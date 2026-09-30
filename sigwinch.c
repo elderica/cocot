@@ -28,7 +28,7 @@ static struct sigaction oact;
 static int master_fileno;
 
 static void
-sigwinch()
+sigwinch(int unused)
 {
     struct winsize win;
 
